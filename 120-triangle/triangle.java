@@ -1,23 +1,27 @@
 class Solution {
     public int minimumTotal(List<List<Integer>> triangle) {
         int n = triangle.size();
-        int m = triangle.get(n-1).size();
-        if(triangle.size() == 1) return triangle.get(0).get(0);
-        int[][] dp = new int[n][m];
-        for(int i=0;i<triangle.size();i++){
-            Arrays.fill(dp[i],-1);
+        int[][] dp = new int[n][n];
+
+        dp[0][0] = triangle.get(0).get(0);
+
+        for(int i=1;i<n;i++){
+            for(int j=0;j<=i;j++){
+                if(j == 0){
+                    dp[i][j] = triangle.get(i).get(j) + dp[i-1][j];
+                }
+                else if(i == j){
+                    dp[i][j] = triangle.get(i).get(j) + dp[i-1][j-1];
+                }
+                else{
+                    dp[i][j] = triangle.get(i).get(j) + Math.min(dp[i-1][j-1],dp[i-1][j]); 
+                }
+            }
         }
-        return findShortest(triangle,0,0,triangle.size()-1,dp);
-    }
-    public int findShortest(List<List<Integer>> triangle,int i,int j,int total,int[][] dp){
-        if(i > total || j >= triangle.get(i).size()){
-            return 0;
+        int max = Integer.MAX_VALUE;
+        for(int i=0;i<n;i++){
+            max = Math.min(max,dp[n-1][i]);
         }
-        if(dp[i][j] != -1) return dp[i][j];
-        
-        int sum = triangle.get(i).get(j);
-        int left = findShortest(triangle,i+1,j,total,dp);
-        int right = findShortest(triangle,i+1,j+1,total,dp);
-        return dp[i][j] = sum + Math.min(left,right);
+        return max;
     }
 }
